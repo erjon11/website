@@ -1,0 +1,282 @@
+/**************
+	Header Slide Show (not implemented yet)
+***************/
+#header_slide{
+	display:-webkit-box;
+	display:-ms-box;
+	
+	background-image:url('images/slide.png');
+	min-height:500px;
+}
+/**************
+	THE TRY-OUT GYM SIGNUP FORM
+***************/
+.free_session_form{
+	-moz-box-flex:1;
+	-webkit-box-flex:1;
+	-ms-box-flex:1;
+	max-width:300px;
+	width:300px;
+	
+	height:218px;
+	/**  The first border is incase the browser isn't compatible with rgba**/
+	background:rgb(0, 0, 0);
+	background:rgba(0, 0, 0, .5);
+	border-radius:10px;
+	margin-top:100px;
+	margin-left:15%;
+}
+.free_session_form h3{
+	color:#ffffff;
+	text-align:center;
+	font-size:14px;
+	font-weight:normal;
+	padding-top:26px;
+}
+.free_session_form h2{
+	color:#ffffff;
+	text-align:center;
+	font-size:21px;
+	text-transform:uppercase;
+	font-weight:normal;
+	padding-top:11px;
+}
+.free_session_form input[type=text]{
+	outline:none;
+	padding:10px;
+	border-radius:3px;
+	width:168px;
+	color:#d3d2d1;
+	/**  The first border is incase the browser isn't compatible with rgba**/
+	border:1px solid rgb(255, 255, 255);
+	border:1px solid rgba(255, 255, 255, .3);
+	margin-left:18.5%;
+	margin-top:21px;
+	background:#706c68;
+	-moz-appearance:none;
+	-webkit-appearance:none;
+	-ms-appearance:none;	
+}
+.free_session_form input::-moz-input-placeholder{
+	color:#d3d2d1;
+	text-transform:uppercase;
+}
+.free_session_form input::-webkit-input-placeholder{
+	color:#d3d2d1;
+	text-transform:uppercase;
+}
+.free_session_form input::-ms-input-placeholder{
+	color:#d3d2d1;
+	text-transform:uppercase;
+}
+.free_session_form input[type=submit]{
+	margin-left:18.5%;
+	margin-top:11px;
+	width:190px;
+	padding:8px;
+	background:#d57f03;
+	color:#eee0d5;
+	font-size:13px;
+	outline:none;
+	border-radius:3px;
+	/**  The first border is incase the browser isn't compatible with rgba**/
+	border:1px solid rgb(255, 255, 255);
+	border:1px solid rgba(255, 255, 255, .3);
+	
+	-moz-appearance:none;
+	-webkit-appearance:none;
+	-ms-appearance:none;	
+}
+/**************
+	3 OFFERS JUST BELOW THE HEADER
+***************/
+.upper_article{
+	-moz-box-orient:vertical;
+	-moz-box-flex:1;
+	
+	display:-webkit-box;
+	-webkit-box-orient:vertical;
+	-webkit-box-flex:1;
+	
+	display:-ms-box;
+	-ms-box-orient:vertical;
+	-ms-box-flex:1;
+	
+	margin-top:-50px;
+	min-height:230px;
+	margin-bottom:24px;
+}
+.upper_article h1{
+	font-size:27px;
+	padding-top:6.2%;
+	padding-left:10%;
+}
+.upper_article p{
+	max-width:300px;
+	font-size:13px;
+	padding-left:12%;
+	padding-right:20px;
+	padding-top:12px;
+	padding-bottom:5px;
+	text-align: justify;
+}
+.upper_article a{
+	font-size:18px;
+	font-weight:bold;
+	text-decoration:none;
+}
+.upper_article:nth-child(1){
+	background:#ffd602;
+	margin-right:10px;
+	margin-left:20px;
+}
+.upper_article:nth-child(1) a{
+	color:#ffffff;
+}
+.upper_article:nth-child(2){
+	background:#0087cb;
+	margin-right:10px;
+}
+.upper_article:nth-child(2) p,article:nth-child(2) a,article:nth-child(2) h1{
+	color:#ffffff;
+}
+.upper_article:nth-child(3){
+	background:#333333;
+	margin-right:20px;
+}
+.upper_article:nth-child(3) p,article:nth-child(3) h1,.upper_article:nth-child(3) a{
+	color:#ffffff;
+}
+.upper_article:nth-child(3) a{
+	color:#000000;
+}
+
+.last_offer_link{
+	margin-top:70px;
+	text-align:center;
+	margin-left:8%;
+	margin-right:8%;
+	padding-top:8px;
+	padding-bottom:5px;
+	background:#ffd602;
+}
+.second_offer_link{
+	margin-top:20px;
+	text-align:center;
+	margin-left:8%;
+	margin-right:8%;
+	padding-top:8px;
+	padding-bottom:5px;
+	background:#000000;
+}
+.first_offer_link{
+	margin-top:10%;
+	text-align:center;
+	margin-left:8%;
+	margin-right:8%;
+	padding-top:8px;
+	padding-bottom:5px;
+	background:#0087cb;
+	
+}
+
+/**************
+	MAIN SECTION
+***************/
+#main{
+	display:-moz-box;
+	-moz-box-orient:horizontal;
+	
+	display:-webkit-box;
+	-webkit-box-orient:horizontal;
+	
+	display:-ms-box;
+	-ms-box-orient:horizontal;
+}
+
+#divider{
+	background:#624300;
+	
+	display:-moz-box;
+	-moz-box-orient:vertical;
+	-moz-box-flex:1;
+	
+	display:-webkit-box;
+	-webkit-box-orient:vertical;
+	-webkit-box-flex:1;
+	
+	display:-ms-box;
+	-ms-box-orient:vertical;
+	-ms-box-flex:1;
+}
+
+#divider h1{
+	color:#fffefe;
+	font-size:18px;
+	font-weight:normal;
+	padding:10px;
+	padding-left:20px;
+}
+
+#activity_section{
+	padding-top:24px;
+	
+	display:-moz-box;
+	-moz-box-orient:horizontal;
+	
+	display:-webkit-box;
+	-webkit-box-orient:horizontal;
+	
+	display:-ms-box;
+	-ms-box-orient:horizontal;
+}
+/**************
+	SLIDE SHOW (NOT YET IMPLEMENTED JUST A basic PREVIEW of how it will look)
+***************/
+.slide_show{
+	display:-moz-box;
+	-moz-box-orient:vertical;
+	-moz-box-flex:1;
+	
+	display:-webkit-box;
+	-webkit-box-orient:vertical;
+	-webkit-box-flex:1;
+	
+	display:-ms-box;.
+	-ms-box-orient:vertical;
+	-ms-box-flex:1;
+	
+	text-align:center;
+	min-height:170px;
+	max-width:228px;
+}
+
+.slide_show:nth-child(1){
+	background-image:url('images/kbV3.png');
+}
+
+.slide_show:nth-child(2){
+	background-image:url('images/cardioV3.png');
+}
+.slide_show:nth-child(3){
+	background-image:url('images/absV3.png');
+}
+.slide_show:nth-child(4){
+	background-image:url('images/yogaV3.png');
+}
+.slide_show:nth-child(5){
+	background-image:url('images/gymV3.png');
+}
+
+.title{
+	background-image:url('images/activity_title_bg.png');
+	min-height:32px;
+	margin-top:138px;
+}
+.title h2{
+	padding-top:5px;
+	color:#ffffff;
+	font-family:MyriadPro-Regular,Verdana, serif;
+	font-weight:normal;
+	font-size:15px;
+}
