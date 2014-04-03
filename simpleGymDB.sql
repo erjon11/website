@@ -49,3 +49,14 @@ CREATE TABLE tblBlog (
     message VARCHAR(1000),
     PRIMARY KEY (email)
 );
+
+CREATE TABLE tblFeedback (
+    id smallint AUTO_INCREMENT,
+    name VARCHAR(25),
+    _date VARCHAR(10),
+    _time VARCHAR(20),
+    message VARCHAR(1000),
+    rating VARCHAR(5),
+    PRIMARY KEY (id)
+);
+    
