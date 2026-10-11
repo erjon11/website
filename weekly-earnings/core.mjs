@@ -1,6 +1,8 @@
 export const JOBS = ['Dual', 'Single', 'Site investigation'];
 export const DEFAULT_RATES = {Dual: 8000, Single: 5000, 'Site investigation': 3000};
-export const freshData = () => ({version: 1, configured: false, rates: {...DEFAULT_RATES}, entries: []});
+export const AREAS = ['London', 'Outside London'];
+export const OUTSIDE_RATES = {Dual: 7000, Single: 4500, 'Site investigation': 3000};
+export const freshData = () => ({version: 2, configured: false, rates: {...DEFAULT_RATES}, outsideRates: {...OUTSIDE_RATES}, entries: []});
 export const money = pence => new Intl.NumberFormat('en-GB', {style:'currency', currency:'GBP'}).format(pence / 100);
 export function parseRate(text) {
   if (!/^\d{1,5}(\.\d{1,2})?$/.test(text.trim())) return null;
@@ -36,16 +38,24 @@ export function monthWeeks(month) {
   return result;
 }
 export function validateData(raw) {
-  if (!raw || typeof raw !== 'object' || (raw.version !== undefined && raw.version !== 1) || typeof raw.configured !== 'boolean' || !Array.isArray(raw.entries) || raw.entries.length > 100000) throw new Error('This is not a supported earnings backup.');
+  if (!raw || typeof raw !== 'object' || (raw.version !== undefined && ![1,2].includes(raw.version)) || typeof raw.configured !== 'boolean' || !Array.isArray(raw.entries) || raw.entries.length > 100000) throw new Error('This is not a supported earnings backup.');
   const rates = {};
   for (const job of JOBS) {
     const rate = raw.rates?.[job];
     if (!Number.isSafeInteger(rate) || rate < 0 || rate > 9999999) throw new Error('The backup contains an invalid rate.');
     rates[job] = rate;
   }
+  const outsideRates = {};
+  for (const job of JOBS) {
+    const rate = raw.version === 2 ? raw.outsideRates?.[job] : OUTSIDE_RATES[job];
+    if (!Number.isSafeInteger(rate) || rate < 0 || rate > 9999999) throw new Error('The backup contains an invalid outside London rate.');
+    outsideRates[job] = rate;
+  }
   const ids = new Set();
   const entries = raw.entries.map(e=>{
     if (!e || typeof e !== 'object') throw new Error('The backup contains an invalid entry.');
+    const area = raw.version === 2 ? e.area : 'London';
+    if (!AREAS.includes(area)) throw new Error('The backup contains an invalid work location.');
     let date = e.date;
     // Swift JSONEncoder dates are seconds since 1 January 2001.
     if (raw.version === undefined && typeof date === 'number') {
@@ -55,7 +65,7 @@ export function validateData(raw) {
     }
     if (!e || typeof e.id !== 'string' || !e.id || e.id.length > 128 || ids.has(e.id) || !isDate(date) || !JOBS.includes(e.job) || !Number.isSafeInteger(e.quantity) || e.quantity < 1 || e.quantity > 1000 || !Number.isSafeInteger(e.ratePence) || e.ratePence < 0 || e.ratePence > 9999999) throw new Error('The backup contains an invalid or duplicate entry.');
     ids.add(e.id);
-    return {id:e.id, date, job:e.job, quantity:e.quantity, ratePence:e.ratePence};
+    return {id:e.id, date, area, job:e.job, quantity:e.quantity, ratePence:e.ratePence};
   });
-  return {version:1, configured:raw.configured, rates, entries};
+  return {version:2, configured:raw.configured, rates, outsideRates, entries};
 }

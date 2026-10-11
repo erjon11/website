@@ -6,7 +6,7 @@ An offline earnings calculator with no account, server, API, analytics or extern
 
 After GitHub Pages is enabled, open https://erjon11.github.io/website/weekly-earnings/ in Safari. Tap Share → Add to Home Screen → Add. Open the app from the new icon while online once and wait for **Offline ready**. It then loads and saves entries offline. HTTPS is required outside localhost. No Apple developer membership or signing renewals are needed.
 
-Set Dual, Single and Site investigation rates. Add quantities for today or earlier dates. Review Monday–Sunday weeks and calendar-month totals. Entries retain the rate used when added; changing a rate does not rewrite history. Delete and re-add an entry to correct it.
+Set Dual, Single and Site investigation rates. Choose London or Outside London for each entry and add quantities for today or earlier dates. London defaults are £80 / £50 / £30; outside London defaults are £70 / £45 / £30. Both sets of rates can be edited independently. Existing entries and older backups migrate to London without changing their recorded earnings. Review Monday–Sunday weeks and calendar-month totals. Entries retain the rate used when added; changing a rate does not rewrite history. Delete and re-add an entry to correct it.
 
 ## Enable GitHub Pages
 

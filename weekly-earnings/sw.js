@@ -1,4 +1,4 @@
-const CACHE = 'weekly-earnings-shell-v2';
+const CACHE = 'weekly-earnings-shell-v3';
 const FILES = ['./','./index.html','./style.css','./app.mjs','./core.mjs','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES))));
 self.addEventListener('activate', event=>event.waitUntil((async()=>{

@@ -1,4 +1,4 @@
-import {JOBS, freshData, money, parseRate, today, isDate, addDays, weekStart, moveMonth, monthStart, total, monthWeeks, validateData} from './core.mjs';
+import {AREAS, JOBS, freshData, money, parseRate, today, isDate, addDays, weekStart, moveMonth, monthStart, total, monthWeeks, validateData} from './core.mjs';
 const KEY = 'weekly-earnings-v1';
 let data = freshData(), loadFailed = false;
 try {
@@ -7,7 +7,7 @@ try {
   else { localStorage.setItem(KEY,JSON.stringify(data)); }
 } catch (e) { loadFailed = true; }
 let page = ['today','earnings','settings'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'today';
-let selectedDate = today(), selectedJob = JOBS[0], quantity = 1, month = today().slice(0,7), expanded = new Set();
+let selectedDate = today(), selectedJob = JOBS[0], selectedArea = 'London', quantity = 1, month = today().slice(0,7), expanded = new Set();
 const main = document.querySelector('#main');
 const esc = value => String(value).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const dateLabel = (date, options={day:'numeric',month:'short'}) => new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB',{...options,timeZone:'UTC'});
@@ -31,21 +31,27 @@ function confirmAction(title, message, button='Confirm') {
   return new Promise(resolve=>dialog.addEventListener('close',()=>resolve(dialog.returnValue==='confirm'),{once:true}));
 }
 function rateFields() {
-  return JOBS.map(job=>`<div class="rate-row"><label for="rate-${JOBS.indexOf(job)}">${job}</label><div class="rate-input"><span aria-hidden="true">£</span><input id="rate-${JOBS.indexOf(job)}" name="${job}" inputmode="decimal" type="text" maxlength="8" value="${(data.rates[job]/100).toFixed(2)}" aria-label="${job} rate in pounds" required></div></div>`).join('');
+  return AREAS.map(area=>`<h3 style="margin:20px 0 4px">${area}</h3>${JOBS.map(job=>{
+    const outside=area==='Outside London', name=outside?'outside-'+job:job, id=`rate-${outside?'outside-':''}${JOBS.indexOf(job)}`;
+    const rates=outside?data.outsideRates:data.rates;
+    return `<div class="rate-row"><label for="${id}">${job}</label><div class="rate-input"><span aria-hidden="true">£</span><input id="${id}" name="${name}" inputmode="decimal" type="text" maxlength="8" value="${(rates[job]/100).toFixed(2)}" aria-label="${outside?'Outside London ':''}${job} rate in pounds" required></div></div>`;
+  }).join('')}`).join('');
 }
+function selectedRates() { return selectedArea==='Outside London'?data.outsideRates:data.rates; }
 function installCard() {
   return `<section class="card install"><h3>Keep it on your iPhone</h3><ol><li>Open this page in <strong>Safari</strong>.</li><li>Tap <strong>Share</strong> → <strong>Add to Home Screen</strong>.</li><li>Open Earnings from its new icon while online once.</li></ol><p>Once the offline indicator is ready, you can use it without a connection. Your records stay on this device.</p></section>`;
 }
 function bindRates() {
   const form = document.querySelector('#rates-form');
   form.addEventListener('submit', event=>{
-    event.preventDefault(); const rates = {};
-    for (const job of JOBS) {
-      const value=parseRate(form.elements.namedItem(job).value);
-      if (value === null) { document.querySelector('#rate-error').textContent='Enter a rate from £0 to £99,999.99, with up to two decimal places.'; form.elements.namedItem(job).focus(); return; }
-      rates[job]=value;
+    event.preventDefault(); const rates = {}, outsideRates = {};
+    for (const area of AREAS) for (const job of JOBS) {
+      const outside=area==='Outside London', name=outside?'outside-'+job:job;
+      const input=form.elements.namedItem(name), value=parseRate(input.value);
+      if (value === null) { document.querySelector('#rate-error').textContent='Enter a rate from £0 to £99,999.99, with up to two decimal places.'; input.focus(); return; }
+      (outside?outsideRates:rates)[job]=value;
     }
-    if (save({...data,configured:true,rates})) { render(); toast('Your rates are saved.'); }
+    if (save({...data,configured:true,rates,outsideRates})) { render(); toast('Your rates are saved.'); }
   });
 }
 function render() {
@@ -70,18 +76,19 @@ function render() {
 function renderDaily() {
   const entries=data.entries.filter(e=>e.date===selectedDate), week=weekStart(selectedDate);
   const weekTotal=total(data.entries,week,addDays(week,7));
-  main.innerHTML=`<p class="eyebrow">${selectedDate===today()?'Let’s get to work':'A little catch-up'}</p><h1>Your day, added up.</h1><p class="subtitle">Every completed job brings you a little further.</p><section class="hero" aria-label="Selected day earnings"><span class="hero-label">${selectedDate===today()?'Earned today':dateLabel(selectedDate,{weekday:'long',day:'numeric',month:'long'})}</span><div class="hero-total">${money(total(entries,selectedDate,addDays(selectedDate,1)))}</div><div class="hero-bottom"><span>This week <strong>${money(weekTotal)}</strong></span><span class="tag">${entries.reduce((n,e)=>n+e.quantity,0)} jobs recorded</span></div></section><label class="field"><span>Work date</span><input id="work-date" type="date" min="1900-01-01" max="${today()}" value="${selectedDate}"></label><p class="helper">Forgot a day? Choose an earlier date to add work.</p><div class="section-title"><h2>Add completed work</h2></div><form class="card" id="work-form"><span class="field-label">Job type</span><div class="job-options" role="group" aria-label="Job type">${JOBS.map(job=>`<button type="button" class="job-choice ${selectedJob===job?'active':''}" data-job="${job}" aria-pressed="${selectedJob===job}">${job}<strong>${money(data.rates[job])}</strong></button>`).join('')}</div><div class="qty-row"><label for="quantity" class="field-label">How many?</label><div class="stepper"><button type="button" id="minus" aria-label="Decrease quantity">−</button><input id="quantity" type="number" inputmode="numeric" min="1" max="1000" step="1" value="${quantity}" aria-label="Quantity" required><button type="button" id="plus" aria-label="Increase quantity">＋</button></div></div><button class="primary full" id="add-work" type="submit">Add ${money(data.rates[selectedJob]*quantity)} <span aria-hidden="true">＋</span></button></form><div class="section-title"><h2>Recorded work</h2><span>${dateLabel(selectedDate)}</span></div><section class="card" style="padding-top:5px;padding-bottom:5px">${entries.length ? entries.slice().reverse().map(e=>`<div class="entry"><span class="entry-icon" aria-hidden="true">${initials(e.job)}</span><div class="entry-detail"><strong>${e.quantity} × ${e.job}</strong><small>${money(e.ratePence)} per job</small></div><span class="entry-amount">${money(e.quantity*e.ratePence)}</span><button class="delete" data-delete="${esc(e.id)}" aria-label="Delete ${e.quantity} ${e.job} entry">×</button></div>`).join('') : '<div class="empty">A fresh start.<br>Add your first job for this date above.</div>'}</section>`;
+  main.innerHTML=`<p class="eyebrow">${selectedDate===today()?'Let’s get to work':'A little catch-up'}</p><h1>Your day, added up.</h1><p class="subtitle">Every completed job brings you a little further.</p><section class="hero" aria-label="Selected day earnings"><span class="hero-label">${selectedDate===today()?'Earned today':dateLabel(selectedDate,{weekday:'long',day:'numeric',month:'long'})}</span><div class="hero-total">${money(total(entries,selectedDate,addDays(selectedDate,1)))}</div><div class="hero-bottom"><span>This week <strong>${money(weekTotal)}</strong></span><span class="tag">${entries.reduce((n,e)=>n+e.quantity,0)} jobs recorded</span></div></section><label class="field"><span>Work date</span><input id="work-date" type="date" min="1900-01-01" max="${today()}" value="${selectedDate}"></label><p class="helper">Forgot a day? Choose an earlier date to add work.</p><div class="section-title"><h2>Add completed work</h2></div><form class="card" id="work-form"><span class="field-label">Work location</span><div class="area-options" role="group" aria-label="Work location">${AREAS.map(area=>`<button type="button" class="area-choice ${selectedArea===area?'active':''}" data-area="${area}" aria-pressed="${selectedArea===area}">${selectedArea===area?'✓ ':''}${area}</button>`).join('')}</div><span class="field-label">Job type</span><div class="job-options" role="group" aria-label="Job type">${JOBS.map(job=>`<button type="button" class="job-choice ${selectedJob===job?'active':''}" data-job="${job}" aria-pressed="${selectedJob===job}">${job}<strong>${money(selectedRates()[job])}</strong></button>`).join('')}</div><div class="qty-row"><label for="quantity" class="field-label">How many?</label><div class="stepper"><button type="button" id="minus" aria-label="Decrease quantity">−</button><input id="quantity" type="number" inputmode="numeric" min="1" max="1000" step="1" value="${quantity}" aria-label="Quantity" required><button type="button" id="plus" aria-label="Increase quantity">＋</button></div></div><button class="primary full" id="add-work" type="submit">Add ${money(selectedRates()[selectedJob]*quantity)} <span aria-hidden="true">＋</span></button></form><div class="section-title"><h2>Recorded work</h2><span>${dateLabel(selectedDate)}</span></div><section class="card" style="padding-top:5px;padding-bottom:5px">${entries.length ? entries.slice().reverse().map(e=>`<div class="entry"><span class="entry-icon" aria-hidden="true">${initials(e.job)}</span><div class="entry-detail"><strong>${e.quantity} × ${e.job}</strong><small>${e.area} · ${money(e.ratePence)} per job</small></div><span class="entry-amount">${money(e.quantity*e.ratePence)}</span><button class="delete" data-delete="${esc(e.id)}" aria-label="Delete ${e.quantity} ${e.job} entry">×</button></div>`).join('') : '<div class="empty">A fresh start.<br>Add your first job for this date above.</div>'}</section>`;
   document.querySelector('#work-date').onchange=e=>{
     const date=e.target.value;
     if (!isDate(date) || date>today()) { e.target.value=selectedDate; return toast('Choose today or an earlier date.'); }
     selectedDate=date; render();
   };
+  document.querySelectorAll('[data-area]').forEach(b=>b.onclick=()=>{selectedArea=b.dataset.area;render();});
   document.querySelectorAll('[data-job]').forEach(b=>b.onclick=()=>{selectedJob=b.dataset.job;render();});
   const input=document.querySelector('#quantity'), button=document.querySelector('#add-work');
   function updateQuantity() {
     const n=Number(input.value); const valid=Number.isInteger(n)&&n>=1&&n<=1000;
     if (valid) quantity=n;
-    button.disabled=!valid;button.innerHTML=valid?`Add ${money(data.rates[selectedJob]*n)} <span aria-hidden="true">＋</span>`:'Enter a quantity from 1 to 1,000';
+    button.disabled=!valid;button.innerHTML=valid?`Add ${money(selectedRates()[selectedJob]*n)} <span aria-hidden="true">＋</span>`:'Enter a quantity from 1 to 1,000';
   }
   input.oninput=updateQuantity;
   document.querySelector('#minus').onclick=()=>{input.value=Math.max(1,(Number(input.value)||1)-1);updateQuantity();};
@@ -89,12 +96,12 @@ function renderDaily() {
   document.querySelector('#work-form').onsubmit=e=>{
     e.preventDefault(); const n=Number(input.value);
     if (!Number.isInteger(n)||n<1||n>1000||selectedDate>today()) return toast('Check the quantity and work date.');
-    const entry={id:crypto.randomUUID(),date:selectedDate,job:selectedJob,quantity:n,ratePence:data.rates[selectedJob]};
+    const entry={id:crypto.randomUUID(),date:selectedDate,area:selectedArea,job:selectedJob,quantity:n,ratePence:selectedRates()[selectedJob]};
     if(save({...data,entries:[...data.entries,entry]})){quantity=1;render();toast(`${n} ${selectedJob} ${n===1?'job':'jobs'} added.`);}
   };
   document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=async()=>{
     const entry=data.entries.find(e=>e.id===b.dataset.delete); if (!entry) return;
-    if(await confirmAction('Delete this entry?',`${entry.quantity} × ${entry.job} · ${money(entry.quantity*entry.ratePence)}. This removes it from your daily, weekly and monthly totals.`,'Delete entry')) {
+    if(await confirmAction('Delete this entry?',`${entry.quantity} × ${entry.job} · ${entry.area} · ${money(entry.quantity*entry.ratePence)}. This removes it from your daily, weekly and monthly totals.`,'Delete entry')) {
       if(save({...data,entries:data.entries.filter(e=>e.id!==entry.id)})){render();toast('Entry deleted.');}
     }
   });
