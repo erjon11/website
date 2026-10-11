@@ -6,10 +6,10 @@ test('GBP rates preserve pennies and reject malformed values',()=>{
   assert.equal(parseRate('80'),8000); assert.equal(parseRate('80.50'),8050);assert.equal(parseRate('0'),0);
   for(const text of ['-1','80.123','', '1e3','NaN','100000','£80','1,000'])assert.equal(parseRate(text),null);
 });
-test('default job example is £250; historical rates are immutable',()=>{
-  const data=freshData();data.entries=[entry('2026-10-11',2,8000),entry('2026-10-11',1,6000,'Single'),entry('2026-10-11',1,3000,'Site investigation')];
-  assert.equal(total(data.entries,'2026-10-11','2026-10-12'),25000);
-  data.rates.Dual=9000;assert.equal(total(data.entries,'2026-10-11','2026-10-12'),25000);
+test('default job example is £240; historical rates are immutable',()=>{
+  const data=freshData();data.entries=[entry('2026-10-11',2,8000),entry('2026-10-11',1,data.rates.Single,'Single'),entry('2026-10-11',1,3000,'Site investigation')];
+  assert.equal(total(data.entries,'2026-10-11','2026-10-12'),24000);
+  data.rates.Dual=9000;assert.equal(total(data.entries,'2026-10-11','2026-10-12'),24000);
 });
 test('Monday weeks, leap days and year boundaries',()=>{
  assert.equal(weekStart('2026-10-11'),'2026-10-05');assert.equal(weekStart('2026-10-12'),'2026-10-12');

@@ -1,5 +1,5 @@
 export const JOBS = ['Dual', 'Single', 'Site investigation'];
-export const DEFAULT_RATES = {Dual: 8000, Single: 6000, 'Site investigation': 3000};
+export const DEFAULT_RATES = {Dual: 8000, Single: 5000, 'Site investigation': 3000};
 export const freshData = () => ({version: 1, configured: false, rates: {...DEFAULT_RATES}, entries: []});
 export const money = pence => new Intl.NumberFormat('en-GB', {style:'currency', currency:'GBP'}).format(pence / 100);
 export function parseRate(text) {
