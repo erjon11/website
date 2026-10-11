@@ -1,0 +1,9 @@
+{
+  "name": "weekly-earnings",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/core.test.mjs",
+    "test:browser": "node tests/browser.cjs"
+  },
+  "devDependencies": {"playwright": "1.62.1"}
+}

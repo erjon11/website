@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#122321"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Earnings"><meta name="description" content="Your work. Your week. Track job earnings offline, in pounds.">
+<title>Weekly Earnings</title><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app"><header class="topbar"><a class="brand" href="#today" aria-label="Weekly Earnings home"><span class="brand-icon">£</span><span>Weekly<span class="brand-light">Earnings</span></span></a><span class="offline-pill" id="offline-state">● Local first</span></header>
+<main id="main"></main><nav class="tabbar" id="nav" aria-label="Main navigation" hidden><button data-page="today"><span aria-hidden="true">＋</span>Daily</button><button data-page="earnings"><span aria-hidden="true">▥</span>Earnings</button><button data-page="settings"><span aria-hidden="true">⚙</span>Settings</button></nav></div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<dialog id="confirm"><form method="dialog"><h2 id="confirm-title"></h2><p id="confirm-text"></p><div class="dialog-actions"><button value="cancel" class="secondary">Cancel</button><button value="confirm" class="primary" id="confirm-button">Confirm</button></div></form></dialog>
+<script type="module" src="app.mjs"></script>
+</body></html>
