@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {freshData,parseRate,total,weekStart,addDays,monthWeeks,validateData} from '../core.mjs';
+import {payment,freshData,parseRate,total,weekStart,addDays,monthWeeks,validateData} from '../core.mjs';
 const entry=(date,quantity,ratePence,job='Dual')=>({id:crypto.randomUUID(),date,quantity,ratePence,job,area:'London'});
 test('GBP rates preserve pennies and reject malformed values',()=>{
   assert.equal(parseRate('80'),8000); assert.equal(parseRate('80.50'),8050);assert.equal(parseRate('0'),0);
@@ -38,4 +38,12 @@ test('London and outside London defaults, with safe legacy migration',()=>{
  const migrated=validateData(old);assert.equal(migrated.entries[0].area,'London');assert.equal(migrated.entries[0].ratePence,8000);assert.equal(migrated.rates.Single,6000);assert.equal(migrated.outsideRates.Single,4500);
  assert.deepEqual(validateData(JSON.parse(JSON.stringify(migrated))),migrated);
  assert.throws(()=>validateData({...fresh,entries:[{...entry('2026-10-11',1,7000),area:'Unknown'}]}));
+});
+
+test('CIS deducts 20 percent with integer-penny rounding',()=>{
+ assert.deepEqual(payment(24000),{grossPence:24000,cisPence:4800,netPence:19200});
+ assert.deepEqual(payment(14500),{grossPence:14500,cisPence:2900,netPence:11600});
+ assert.deepEqual(payment(0),{grossPence:0,cisPence:0,netPence:0});
+ assert.deepEqual(payment(3),{grossPence:3,cisPence:1,netPence:2});
+ assert.deepEqual(payment(10002),{grossPence:10002,cisPence:2000,netPence:8002});
 });

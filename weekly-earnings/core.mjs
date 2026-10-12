@@ -69,3 +69,8 @@ export function validateData(raw) {
   });
   return {version:2, configured:raw.configured, rates, outsideRates, entries};
 }
+
+export function payment(grossPence) {
+  const cisPence = Math.round(grossPence / 5);
+  return {grossPence, cisPence, netPence: grossPence - cisPence};
+}
